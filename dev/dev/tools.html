@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools - Gibbon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, rgba(244, 239, 252, 0.4) 0%, rgba(154, 101, 229, 0.1) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header h1 {
+            color: rgba(154, 101, 229, 1);
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 18px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(154, 101, 229, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .tool-card.purple::before {
+            background: linear-gradient(90deg, rgba(154, 101, 229, 1) 0%, rgba(134, 81, 209, 1) 100%);
+        }
+
+        .tool-card.blue::before {
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .tool-card.green::before {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        .tool-card.orange::before {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .tool-card.red::before {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .tool-card.pink::before {
+            background: linear-gradient(90deg, #ec4899 0%, #db2777 100%);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(154, 101, 229, 0.2);
+        }
+
+        .tool-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card.purple .tool-icon {
+            background: linear-gradient(135deg, rgba(244, 239, 252, 1) 0%, rgba(221, 204, 245, 1) 100%);
+        }
+
+        .tool-card.blue .tool-icon {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .tool-card.green .tool-icon {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+
+        .tool-card.orange .tool-icon {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+
+        .tool-card.red .tool-icon {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+
+        .tool-card.pink .tool-icon {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        }
+
+        .tool-card:hover .tool-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .tool-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .tool-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 24px;
+            padding-left: 12px;
+            border-left: 4px solid rgba(154, 101, 229, 1);
+        }
+
+        .info-box {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(154, 101, 229, 0.1);
+            border-left: 4px solid rgba(154, 101, 229, 1);
+            margin-top: 48px;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(244, 239, 252, 1) 0%, rgba(221, 204, 245, 1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .info-content {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tool-card {
+                padding: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛠️ Tools</h1>
+            <p>Accédez à tous vos outils en un clic</p>
+        </div>
+
+        <h2 class="section-title">Outils disponibles</h2>
+        
+        <div class="tools-grid">
+
+            <a href="todolist.php" target="_blank" rel="noopener noreferrer" class="tool-card purple">
+                <div class="tool-icon"> 📝</div>
+                <div class="tool-title">todolist</div>
+                <div class="tool-description">
+                    Une todolist pour organiser vos devoirs et vos révisions
+                </div>
+            </a>
+
+            <a href="scalendar.php" target="_blank" rel="noopener noreferrer" class="tool-card purple">
+                <div class="tool-icon"> 📅</div>
+                <div class="tool-title">Calendrier IUT/Entreprise</div>
+                <div class="tool-description">
+                    Calendrier pour voir les semaines en entreprise et en IUT
+                </div>
+            </a>
+
+            <a href="pomodoro.php" target="_blank" rel="noopener noreferrer" class="tool-card blue">
+                <div class="tool-icon">🕰️</div>
+                <div class="tool-title">Pomodoro</div>
+                <div class="tool-description">
+                    Enregistrer votre temps de travaille avec des sessions pomodoro.
+                </div>
+            </a>
+
+        </div>
+
+        <div class="info-box">
+            <div class="info-header">
+                <div class="info-icon">💡</div>
+                <div class="info-title">Astuce</div>
+            </div>
+            <div class="info-content">
+                Tous ces outils sont conçus pour vous faciliter la vie au quotidien. N'hésitez pas à les utiliser selon vos besoins !
+            </div>
+        </div>
+    </div>
+</body>
+</html>

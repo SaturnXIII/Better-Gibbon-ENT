@@ -1,22 +1,7 @@
 <?php
 /*
 Gibbon: the flexible, open school platform
-Founded by Ross Parker at ICHK Secondary. Built by Ross Parker, Sandra Kuipers and the Gibbon community (https://gibbonedu.org/about/)
-Copyright © 2010, Gibbon Foundation
-Gibbon™, Gibbon Education Ltd. (Hong Kong)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+...
 */
 
 namespace Gibbon\UI\Dashboard;
@@ -48,9 +33,6 @@ class StudentDashboard implements OutputableInterface, ContainerAwareInterface
     protected $session;
     protected $settingGateway;
 
-    /**
-     * @var View
-     */
     private $view;
 
     public function __construct(Connection $db, Session $session, SettingGateway $settingGateway, View $view)
@@ -89,27 +71,20 @@ class StudentDashboard implements OutputableInterface, ContainerAwareInterface
         $gibbonPersonID = $this->session->get('gibbonPersonID');
         $session = $this->session;
 
-        $homeworkNameSingular = $this->settingGateway->getSettingByScope('Planner', 'homeworkNameSingular');
-
-        $return = false;
-
         $planner = false;
 
-       // PLANNER
-       if (isActionAccessible($guid, $connection2, '/modules/Planner/planner.php')) {
+        // PLANNER
+        if (isActionAccessible($guid, $connection2, '/modules/Planner/planner.php')) {
             $planner = $this
                 ->getContainer()
                 ->get(TodaysLessonsTable::class)
-                ->create($session->get('gibbonSchoolYearID'), $this->session->get('gibbonPersonID'), 'Student')
+                ->create($session->get('gibbonSchoolYearID'), $gibbonPersonID, 'Student')
                 ->getOutput();
         }
 
-        //GET TIMETABLE
+        // TIMETABLE
         $timetable = false;
-        if (
-            isActionAccessible($guid, $connection2, '/modules/Timetable/tt.php') and $this->session->get('username') != ''
-            && $this->session->get('gibbonRoleIDCurrentCategory')
-        ) {
+        if (isActionAccessible($guid, $connection2, '/modules/Timetable/tt.php') && $this->session->get('username') != '') {
             $_POST = (new Validator(''))->sanitize($_POST);
             $jsonQuery = [
                 'gibbonTTID' => $_GET['gibbonTTID'] ?? '',
@@ -117,14 +92,14 @@ class StudentDashboard implements OutputableInterface, ContainerAwareInterface
             ];
 
             $apiEndpoint = (string)Url::fromHandlerRoute('index_tt_ajax.php')->withQueryParams($jsonQuery);
-            
+
             $timetable .= '<h2>'.__('My Timetable').'</h2>';
             $timetable .= "<div hx-get='".$apiEndpoint."' hx-trigger='load' style='width: 100%; min-height: 40px; text-align: center'>";
             $timetable .= "<img style='margin: 10px 0 5px 0' src='".$this->session->get('absoluteURL')."/themes/Default/img/loading.gif' alt='".__('Loading')."' onclick='return false;' /><br/><p style='text-align: center'>".__('Loading').'</p>';
             $timetable .= '</div>';
         }
 
-        // TABS
+        // BUILD TABS
         $tabs = [];
 
         if (!empty($planner) || !empty($timetable)) {
@@ -135,25 +110,18 @@ class StudentDashboard implements OutputableInterface, ContainerAwareInterface
             ];
         }
 
-        // Dashboard Hooks
+        // DASHBOARD HOOKS
         $hooks = $this->getContainer()->get(HookGateway::class)->getAccessibleHooksByType('Student Dashboard', $this->session->get('gibbonRoleIDCurrent'));
         foreach ($hooks as $hookData) {
-
-            // Set the module for this hook for translations
             $this->session->set('module', $hookData['sourceModuleName']);
             $include = $this->session->get('absolutePath').'/modules/'.$hookData['sourceModuleName'].'/'.$hookData['sourceModuleInclude'];
 
             if (!file_exists($include)) {
                 $hookOutput = Format::alert(__('The selected page cannot be displayed due to a hook error.'), 'error');
             } else {
-               try {
-                    $hookOutput = include $include;
-                } catch (\Throwable $e) {
-                    error_log($e->getMessage());
-                    $hookOutput = Format::alert(__('The selected page cannot be displayed due to a hook error.'), 'error');
-                }
+                $hookOutput = include $include;
             }
-            
+
             $tabs[$hookData['name']] = [
                 'label'   => __($hookData['name'], [], $hookData['sourceModuleName']),
                 'content' => $hookOutput,
@@ -161,17 +129,57 @@ class StudentDashboard implements OutputableInterface, ContainerAwareInterface
             ];
         }
 
-        // Set the default tab
-        $studentDashboardDefaultTab = $this->settingGateway->getSettingByScope('School Admin', 'studentDashboardDefaultTab');
-        $defaultTab = !isset($_GET['tab']) && !empty($studentDashboardDefaultTab)
-            ? array_search($studentDashboardDefaultTab, array_keys($tabs))+1
-            : preg_replace('/[^0-9]/', '', $_GET['tab'] ?? 1);
+        // --- IFRAMES COMME CALENDAR ---
+        $calendarContent  = "<iframe src='https://Your_gibbon_url/gibbon/dev/calendar.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $UserNotesContent = "<iframe src='https://Your_gibbon_url/gibbon/dev/user-note.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $homeworksContent = "<iframe src='https://Your_gibbon_url/gibbon/dev/view-homeworks.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $gradesContent    = "<iframe src='https://Your_gibbon_url/gibbon/dev/view-note.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $addContent       = "<iframe src='https://Your_gibbon_url/gibbon/dev/add.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $tools            = "<iframe src='https://Your_gibbon_url/gibbon/dev/tools.html' style='width:100%; height:600px; border:none;'></iframe>";
 
-        $return .= $this->view->fetchFromTemplate('ui/tabs.twig.html', [
-            'selected' => $defaultTab ?? 1,
+        // Ordre des onglets : Calendar → Homeworks → Global Grades → Add → autres onglets
+        $tabs = array_merge(
+            ['Grades' => [
+                'label'   => __('Grades'),
+                'content' => $UserNotesContent,
+                'icon'    => 'chart-bar',
+            ]],
+            ['Homeworks' => [
+                'label'   => __('Homeworks'),
+                'content' => $homeworksContent,
+                'icon'    => 'clipboard-list',
+            ]],
+            ['Calendar' => [
+                'label'   => __('Calendar'),
+                'content' => $calendarContent,
+                'icon'    => 'calendar',
+            ]],
+            ['Global Grades' => [
+                'label'   => __('Global Grades'),
+                'content' => $gradesContent,
+                'icon'    => 'chart-bar',
+            ]],
+            ['Add' => [
+                'label'   => __('Add'),
+                'content' => $addContent,
+                'icon'    => 'plus-circle',
+            ]],
+             ['Tools' => [
+                'label'   => __('Tools'),
+                'content' => $tools,
+                'icon'    => 'tools',
+            ]],
+            $tabs // autres onglets existants
+        );
+
+        // Onglet par défaut = Homeworks (index 2)
+        $defaultTab = 2;
+
+        $return = $this->view->fetchFromTemplate('ui/tabs.twig.html', [
+            'selected' => $defaultTab,
             'tabs'     => $tabs,
             'outset'   => true,
-            'icons'    => true,
+            'icons'    => true, // icônes toujours visibles avec CSS si besoin
         ]);
 
         return $return;

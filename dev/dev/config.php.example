@@ -1,0 +1,10 @@
+<?php
+// config.php.example
+
+// Rename this file to config.php and fill in your database credentials.
+return [
+    'host' => 'your_database_host',
+    'dbname' => 'your_database_name',
+    'user' => 'your_database_user',
+    'pass' => 'your_database_password',
+];

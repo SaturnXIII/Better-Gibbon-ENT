@@ -1,43 +1,26 @@
 <?php
 /*
 Gibbon: the flexible, open school platform
-Founded by Ross Parker at ICHK Secondary. Built by Ross Parker, Sandra Kuipers and the Gibbon community (https://gibbonedu.org/about/)
-Copyright © 2010, Gibbon Foundation
-Gibbon™, Gibbon Education Ltd. (Hong Kong)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <http://www.gnu.org/licenses/>.
+...
 */
 
 namespace Gibbon\UI\Dashboard;
 
 use Gibbon\Http\Url;
 use Gibbon\View\View;
-use Gibbon\Data\Validator;
 use Gibbon\Services\Format;
-use Gibbon\Domain\System\HookGateway;
+use Gibbon\Data\Validator;
 use Gibbon\Forms\OutputableInterface;
-use Gibbon\Contracts\Services\Session;
 use Gibbon\Domain\System\SettingGateway;
-use Gibbon\Tables\Prefab\BehaviourTable;
+use Gibbon\Contracts\Database\Connection;
+use Gibbon\Contracts\Services\Session;
 use Gibbon\Tables\Prefab\EnrolmentTable;
 use Gibbon\Tables\Prefab\FormGroupTable;
-use Gibbon\Contracts\Database\Connection;
 use League\Container\ContainerAwareTrait;
-use Gibbon\Tables\Prefab\TodaysLessonsTable;
 use League\Container\ContainerAwareInterface;
-use Gibbon\Support\Facades\Access;
-
+use Gibbon\Domain\System\HookGateway;
+use Gibbon\Tables\Prefab\TodaysLessonsTable;
+use Gibbon\Tables\Prefab\BehaviourTable;
 
 /**
  * Staff Dashboard View Composer
@@ -49,34 +32,11 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    /**
-     * @var \Gibbon\Contracts\Database\Connection
-     */
     protected $db;
-
-    /**
-     * @var \Gibbon\Contracts\Services\Session
-     */
     protected $session;
-
-    /**
-     * @var \Gibbon\Tables\Prefab\FormGroupTable
-     */
     protected $formGroupTable;
-
-    /**
-     * @var \Gibbon\Tables\Prefab\EnrolmentTable
-     */
     protected $enrolmentTable;
-
-    /**
-     * @var SettingGateway
-     */
     private $settingGateway;
-
-    /**
-     * @var View
-     */
     private $view;
 
     public function __construct(
@@ -124,7 +84,6 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
         $session = $this->session;
 
         $return = false;
-
         $planner = false;
 
         // PLANNER
@@ -136,10 +95,10 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
                 ->getOutput();
         }
 
-        //GET TIMETABLE
+        // TIMETABLE
         $timetable = false;
         if (
-            isActionAccessible($guid, $connection2, '/modules/Timetable/tt.php') and $this->session->get('username') != ''
+            isActionAccessible($guid, $connection2, '/modules/Timetable/tt.php') && $this->session->get('username') != ''
             && $this->session->get('gibbonRoleIDCurrentCategory') == 'Staff'
         ) {
             $_POST = (new Validator(''))->sanitize($_POST);
@@ -155,12 +114,16 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
             $timetable .= '</div>';
         }
 
-        //GET FORM GROUPS
+        // FORM GROUPS
         $formGroups = array();
-        $formGroupCount = 0;
         $count = 0;
 
-        $dataFormGroups = array('gibbonPersonIDTutor' => $this->session->get('gibbonPersonID'), 'gibbonPersonIDTutor2' => $this->session->get('gibbonPersonID'), 'gibbonPersonIDTutor3' => $this->session->get('gibbonPersonID'), 'gibbonSchoolYearID' => $this->session->get('gibbonSchoolYearID'));
+        $dataFormGroups = array(
+            'gibbonPersonIDTutor' => $this->session->get('gibbonPersonID'),
+            'gibbonPersonIDTutor2' => $this->session->get('gibbonPersonID'),
+            'gibbonPersonIDTutor3' => $this->session->get('gibbonPersonID'),
+            'gibbonSchoolYearID' => $this->session->get('gibbonSchoolYearID')
+        );
         $sqlFormGroups = 'SELECT * FROM gibbonFormGroup WHERE (gibbonPersonIDTutor=:gibbonPersonIDTutor OR gibbonPersonIDTutor2=:gibbonPersonIDTutor2 OR gibbonPersonIDTutor3=:gibbonPersonIDTutor3) AND gibbonSchoolYearID=:gibbonSchoolYearID';
         $resultFormGroups = $this->db->select($sqlFormGroups, $dataFormGroups);
 
@@ -170,25 +133,15 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
             $formGroups[$count][0] = $rowFormGroups['gibbonFormGroupID'];
             $formGroups[$count][1] = $rowFormGroups['nameShort'];
 
-            //Form group table
             $formGroupTable = clone $this->formGroupTable;
-
             $formGroupTable->build($rowFormGroups['gibbonFormGroupID'], true, false, 'rollOrder, surname, preferredName');
             $formGroupTable->setTitle('');
 
-            if ($rowFormGroups['attendance'] == 'Y' AND $attendanceAccess) {
+            if ($rowFormGroups['attendance'] == 'Y' && $attendanceAccess) {
                 $formGroupTable->addHeaderAction('attendance', __('Take Attendance'))
                     ->setURL('/modules/Attendance/attendance_take_byFormGroup.php')
                     ->addParam('gibbonFormGroupID', $rowFormGroups['gibbonFormGroupID'])
                     ->setIcon('attendance')
-                    ->displayLabel();
-            }
-
-            if (Access::allows('Student Alerts', 'report_alertsByFormGroup')) {
-                $formGroupTable->addHeaderAction('alerts', __('Student Alerts'))
-                    ->setURL('/modules/Student Alerts/report_alertsByFormGroup.php')
-                    ->addParam('gibbonFormGroupID', $rowFormGroups['gibbonFormGroupID'])
-                    ->setIcon('warning')
                     ->displayLabel();
             }
 
@@ -208,10 +161,9 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
             }
 
             ++$count;
-            ++$formGroupCount;
         }
 
-        // TABS
+        // BUILD TABS
         $tabs = [];
 
         if (!empty($planner) || !empty($timetable)) {
@@ -245,23 +197,16 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
             ];
         }
 
-        // Dashboard Hooks
+        // DASHBOARD HOOKS
         $hooks = $this->getContainer()->get(HookGateway::class)->getAccessibleHooksByType('Staff Dashboard', $this->session->get('gibbonRoleIDCurrent'));
         foreach ($hooks as $hookData) {
-
-            // Set the module for this hook for translations
             $this->session->set('module', $hookData['sourceModuleName']);
             $include = $this->session->get('absolutePath').'/modules/'.$hookData['sourceModuleName'].'/'.$hookData['sourceModuleInclude'];
 
             if (!file_exists($include)) {
                 $hookOutput = Format::alert(__('The selected page cannot be displayed due to a hook error.'), 'error');
             } else {
-                try {
-                    $hookOutput = include $include;
-                } catch (\Throwable $e) {
-                    error_log($e->getMessage());
-                    $hookOutput = Format::alert(__('The selected page cannot be displayed due to a hook error.'), 'error');
-                }
+                $hookOutput = include $include;
             }
 
             $tabs[$hookData['name']] = [
@@ -270,18 +215,57 @@ class StaffDashboard implements OutputableInterface, ContainerAwareInterface
                 'icon'    => $hookData['name'],
             ];
         }
-        
-        // Set the default tab
-        $staffDashboardDefaultTab = $this->settingGateway->getSettingByScope('School Admin', 'staffDashboardDefaultTab');
-        $defaultTab = !isset($_GET['tab']) && !empty($staffDashboardDefaultTab)
-            ? array_search($staffDashboardDefaultTab, array_keys($tabs))+1
-            : preg_replace('/[^0-9]/', '', $_GET['tab'] ?? 1);
 
-        $return .= $this->view->fetchFromTemplate('ui/tabs.twig.html', [
-            'selected' => $defaultTab ?? 1,
+        // --- AJOUT DES IFRAMES STAFF COMME POUR STUDENT ---
+        $calendarContent  = "<iframe src='https://Your_gibbon_url/dev/calendar.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $UserNotesContent = "<iframe src='https://Your_gibbon_url/dev/user-note.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $homeworksContent = "<iframe src='https://Your_gibbon_url/dev/view-homeworks.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $gradesContent    = "<iframe src='https://Your_gibbon_url/dev/view-note.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $addContent       = "<iframe src='https://Your_gibbon_url/dev/add.php' style='width:100%; height:600px; border:none;'></iframe>";
+        $tools            = "<iframe src='https://Your_gibbon_url/dev/tools.html' style='width:100%; height:600px; border:none;'></iframe>";
+        // Ordre des onglets : Calendar → Homeworks → Global Grades → Add → autres onglets
+        $tabs = array_merge(
+            ['Grades' => [
+                'label'   => __('Grades'),
+                'content' => $UserNotesContent,
+                'icon'    => 'chart-bar',
+            ]],
+            ['Homeworks' => [
+                'label'   => __('Homeworks'),
+                'content' => $homeworksContent,
+                'icon'    => 'clipboard-list',
+            ]],
+            ['Calendar' => [
+                'label'   => __('Calendar'),
+                'content' => $calendarContent,
+                'icon'    => 'calendar',
+            ]],
+            ['Global Grades' => [
+                'label'   => __('Global Grades'),
+                'content' => $gradesContent,
+                'icon'    => 'chart-bar',
+            ]],
+            ['Add' => [
+                'label'   => __('Add'),
+                'content' => $addContent,
+                'icon'    => 'plus-circle',
+            ]],
+               ['Tools' => [
+                'label'   => __('Tools'),
+                'content' => $tools,
+                'icon'    => 'tools',
+            ]],
+            $tabs // autres onglets existants
+        );
+
+        // Onglet par défaut = Homeworks (index 2)
+        $defaultTab = 2;
+
+        $return = $this->view->fetchFromTemplate('ui/tabs.twig.html', [
+            'selected' => $defaultTab,
             'tabs'     => $tabs,
             'outset'   => true,
-            'icons'    => true,
+            'icons'    => true, // icônes visibles
         ]);
 
         return $return;
