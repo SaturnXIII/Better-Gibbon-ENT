@@ -6,40 +6,29 @@
 
 ------
 
-Gibbon Core
+My custom Gibbon Education ✨
 ===========
-The Core repository represents the bulk of Gibbon, including all of its primary functionality. The core can be extended through the use of modules and themes, which are provided separately. See the [Extend](https://gibbonedu.org/extend/) page for more info.
+At my school, we don't have tools to record our grades and homework. So I cloned Gibbon and modified it to work without a teacher, relying solely on student contributions. I took the opportunity to create pages with graphs, more personalized averages, and tools like a to-do list and a Pomodoro Technique with statistics.
 
-Gibbon is open source, and maintained for the benefit of teachers, students, parents and schools.
 
-## Documentation
 
-For full documentation, visit [docs.gibbonedu.org](https://docs.gibbonedu.org).
+## Home Page
 
-## Installation & Support
+I modified all the presentation pages to add my own pages created in PHP (in the /dev folder).
 
-For installation instructions, visit [Getting Started: Installing Gibbon](https://docs.gibbonedu.org/introduction/installing-gibbon)
+<img width="500" height="300" alt="imageedit_4_3235357569" src="https://github.com/user-attachments/assets/103d5cbc-e466-4947-9dde-73def863ff1a" />
+<img width="500" height="300" alt="imageedit_5_8294992185" src="https://github.com/user-attachments/assets/f6d61436-7bee-4211-9d4a-430838a3a46f" />
+<img width="500" height="917" alt="imageedit_6_8814411515" src="https://github.com/user-attachments/assets/ba98abad-a782-40b7-a71e-d7f3833d7dbe" />
+<img width="500" height="917" alt="imageedit_7_2326988623" src="https://github.com/user-attachments/assets/4c65bfcf-670b-4bea-b33f-84d150205bdf" />
+and more...
 
-For support visit [ask.gibbonedu.org](https://ask.gibbonedu.org) or see [our documentation](https://docs.gibbonedu.org).
+## Pomodoro and todolist :
+<img width="500" height="300" alt="Screenshot from 2025-11-25 22-18-52" src="https://github.com/user-attachments/assets/75ad8385-0b37-48d6-b755-fa108782255c" />
+<img width="500" height="300" alt="Screenshot from 2025-11-25 22-19-23" src="https://github.com/user-attachments/assets/43055352-8313-41cf-9fb7-0d6c9ba25fff" />
 
-## Cutting Edge
-If you want to run the latest version of Gibbon, prerelease, you can get the source from our [GitHub repository](https://github.com/GibbonEdu/core). Remember, though, it is not stable, and you may lose data. This is not for the faint of heart.
-
-For installation instructions, be sure to follow the instructions for [Cutting Edge Code](https://docs.gibbonedu.org/introduction/installation-options/cutting-edge-code).
-
-## Translation
-
-Thanks to our amazing volunteers, Gibbon is available in many different languages. We use the online tool [POEditor](https://poeditor.com), which enables our volunteer translators to collaborate and track their translation progress. Huge thanks to POEditor for their support of open source projects and making this tool available for our community. If you would like to help translate Gibbon, please email support@gibbonedu.org and [learn more here](https://gibbonedu.org/about/#languages). Your help would be most appreciated!
-
-## Contributing
-
-We welcome community contribution and aim to ensure Gibbon is an open and friendly environment. Information about contributing, submitting issues, and pull requests can be found in the following docs:
-
-- [**Contributor Guide**](https://github.com/GibbonEdu/core/blob/master/.github/CONTRIBUTING.md) - Learn more about how you can contribute to Gibbon, from code to non-code contributions alike.
-
-- [**Code of Conduct**](https://github.com/GibbonEdu/core/blob/master/.github/CODE_OF_CONDUCT.md) - Our pledge to foster a welcoming community and a positive environment for anyone to participate in.
-
-- [**Developer Workflow**](https://docs.gibbonedu.org/development/getting-started/developer-workflow) - If you want to get involved in the development process, check out our workflow and [GitHub repository](https://github.com/GibbonEdu/core). Generally there will be a development branch with the latest code, as per our [Development Road Map](https://docs.gibbonedu.org/development/gibbon-road-map).
+<img width="500" height="300" alt="Screenshot from 2025-11-25 22-19-37" src="https://github.com/user-attachments/assets/5f307474-9f41-496d-864a-8d6f446acb7e" />
+<img width="500" height="300" alt="Screenshot from 2025-11-25 22-20-04" src="https://github.com/user-attachments/assets/39328640-2efb-4652-8753-0f521345498a" />
+<img width="500" height="300" alt="Screenshot from 2025-11-25 22-20-12" src="https://github.com/user-attachments/assets/e068c457-f701-4c63-af01-9a43fd3ce86d" />
 
 ## License
 
